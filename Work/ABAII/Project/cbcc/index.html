@@ -1,0 +1,179 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#020617">
+    <title>Trợ lý AI cho Cán bộ, Công chức</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/heroicons/2.0.18/24/outline/hero-icons.min.css" rel="stylesheet">
+<script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://esm.sh/react-dom@^19.1.0/",
+    "react/": "https://esm.sh/react@^19.1.0/",
+    "react": "https://esm.sh/react@^19.1.0",
+    "@heroicons/react/": "https://esm.sh/@heroicons/react@^2.2.0/",
+    "@google/genai": "https://esm.sh/@google/genai@1.6.0",
+    "docx": "https://esm.sh/docx@8.5.0",
+    "file-saver": "https://esm.sh/file-saver@2.0.5",
+    "marked": "https://esm.sh/marked@12.0.2",
+    "@react-oauth/google": "https://esm.sh/@react-oauth/google@^0.12.1",
+    "idb": "https://esm.sh/idb@^8.0.0"
+  }
+}
+</script>
+<style>
+  /* Custom scrollbar for Webkit browsers */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 10px; 
+    height: 10px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.5); /* slate-900 with transparency */
+    border-radius: 10px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #38bdf8; /* sky-400 */
+    border-radius: 10px;
+    border: 2px solid rgba(15, 23, 42, 0.5); /* slate-900 with transparency */
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #0ea5e9; /* sky-500 */
+  }
+  /* For Firefox */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #38bdf8 rgba(15, 23, 42, 0.5); /* thumb track */
+  }
+
+  /* Global Animations & Filters */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(25px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+  .animate-fadeInUp {
+    animation: fadeInUp 0.7s ease-out forwards;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { 
+      opacity: 0.6; 
+      transform: scale(1);
+      filter: drop-shadow(0 0 5px rgba(56, 189, 248, 0.3));
+    }
+    50% { 
+      opacity: 0.9; 
+      transform: scale(1.05);
+      filter: drop-shadow(0 0 15px rgba(56, 189, 248, 0.5));
+    }
+  }
+  .animate-pulse-glow {
+    animation: pulse-glow 3.5s infinite ease-in-out;
+  }
+  
+  @keyframes subtle-ping {
+    0% {
+      transform: scale(1);
+      opacity: 0.3;
+    }
+    50% {
+      transform: scale(1.15); /* Smaller scale for subtlety */
+      opacity: 0.1;
+    }
+    100% {
+      transform: scale(1.25);
+      opacity: 0;
+    }
+  }
+  .animate-subtle-ping {
+    animation: subtle-ping 3s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+
+
+  .filter_cyber_glow {
+    filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.6)) drop-shadow(0 0 20px rgba(56, 189, 248, 0.3));
+  }
+  
+  .filter_subtle_glow {
+     filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.3));
+  }
+  
+  /* Aurora Background Animation */
+  @keyframes aurora-bg {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  .aurora-background {
+    background: linear-gradient(-45deg, #0f172a, #020617, #1e293b, #082f49, #020617);
+    background-size: 400% 400%;
+    animation: aurora-bg 25s ease infinite;
+  }
+
+  /* Focus ring styles */
+  :focus-visible {
+    outline: 2px solid #38bdf8 !important; /* sky-400 */
+    outline-offset: 2px !important;
+    box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.3) !important;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: #e2e8f0; /* slate-200 for better default contrast */
+  }
+
+  /* Specific element focus for non-button/input elements if needed */
+  [tabindex="0"]:focus-visible, [role="button"]:focus-visible {
+    outline: 2px solid #38bdf8 !important;
+    outline-offset: 2px !important;
+     box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.3) !important;
+  }
+  
+  /* Gradient text utility */
+  .text-gradient-cyber {
+    background-image: linear-gradient(to right, #7dd3fc, #38bdf8, #0ea5e9); /* sky-300, sky-400, sky-500 */
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  
+  /* Glassmorphism utility */
+  .glass-pane {
+    background-color: rgba(30, 41, 59, 0.6); /* slate-800 with more opacity */
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(51, 65, 85, 0.7); /* slate-700 with more opacity */
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  }
+
+  /* AI Loading dots animation */
+  @keyframes aiLoadingDot {
+    0%, 80%, 100% { transform: scale(0); }
+    40% { transform: scale(1.0); }
+  }
+  .ai-loading-dot {
+    animation: aiLoadingDot 1.4s infinite ease-in-out both;
+  }
+  .ai-loading-dot.dot1 { animation-delay: -0.32s; }
+  .ai-loading-dot.dot2 { animation-delay: -0.16s; }
+  
+</style>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body class="aurora-background">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+</body>
+</html>
