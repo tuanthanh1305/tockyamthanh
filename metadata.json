@@ -1,0 +1,8 @@
+{
+  "name": "Tốc ký âm thanh",
+  "description": "Chuyển lời nói thành văn bản dễ dàng. Dù là lời nói bằng tiếng Anh, nội dung vẫn được chuyển sang tiếng Việt. Mọi lời nói được chuyển đổi thành ghi chép rõ ràng, chính xác và dễ hiểu.",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "prompt": ""
+}
