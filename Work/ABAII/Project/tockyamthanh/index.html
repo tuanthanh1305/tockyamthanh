@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tốc ký âm thanh</title>
+    <link rel="stylesheet" href="/index.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script type="importmap">
+      {
+        "imports": {
+          "@google/genai": "https://esm.sh/@google/genai@^0.8.0",
+          "marked": "https://esm.sh/marked@^4.0.0",
+          "docx": "https://esm.sh/docx@8.5.0"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div class="app-container">
+      <div class="main-content">
+        <div class="note-area">
+          <div class="note-header">
+            <div class="title-container">
+              <a href="https://cbcc.abaii.space/" class="logo-link" title="Trang chủ Abaii" target="_blank" rel="noopener noreferrer">
+                <i class="fas fa-microchip"></i>
+              </a>
+              <div class="editor-title" contenteditable="true" placeholder="Ghi chú không tiêu đề">
+                Ghi chú không tiêu đề
+              </div>
+            </div>
+
+            <div class="tab-navigation-container">
+              <div class="tab-navigation">
+                <button class="tab-button active" data-tab="note">Ghi chú</button>
+                <button class="tab-button" data-tab="raw">Bản nháp</button>
+                <div class="active-tab-indicator"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="note-content-wrapper">
+            <div
+              id="polishedNote"
+              class="note-content active"
+              contenteditable="true"
+              placeholder="Ghi chú đã được tinh chỉnh của bạn sẽ xuất hiện ở đây..."
+            ></div>
+            <div
+              id="rawTranscription"
+              class="note-content"
+              contenteditable="true"
+              placeholder="Bản ghi âm thô sẽ xuất hiện ở đây..."
+            ></div>
+          </div>
+        </div>
+
+        <div class="recording-interface">
+          <div id="liveRecordingTitle" class="live-recording-title" style="display: none">
+            Đang ghi âm
+          </div>
+          <canvas id="liveWaveformCanvas" style="display: none"></canvas>
+          <div id="liveRecordingTimerDisplay" class="live-recording-timer" style="display: none">
+            00:00.00
+          </div>
+
+          <div class="status-indicator">
+            <span id="recordingStatus" class="status-text">Sẵn sàng ghi âm</span>
+          </div>
+
+          <div class="recording-controls">
+            <button class="action-button" id="themeToggleButton" title="Chuyển đổi giao diện">
+              <i class="fas fa-sun"></i>
+            </button>
+
+            <button id="recordButton" class="record-button" title="Bắt đầu/Dừng Ghi âm">
+              <div class="record-button-inner">
+                <i class="fas fa-microphone"></i>
+              </div>
+              <svg class="record-waves" viewBox="0 0 200 200">
+                <circle class="wave wave1" cx="100" cy="100" r="40" />
+                <circle class="wave wave2" cx="100" cy="100" r="70" />
+                <circle class="wave wave3" cx="100" cy="100" r="100" />
+              </svg>
+              <span class="record-text">Ghi âm</span>
+            </button>
+
+            <button class="action-button" id="downloadButton" title="Tải xuống (.docx)">
+              <i class="fas fa-download"></i>
+            </button>
+
+            <button class="action-button" id="newButton" title="Ghi chú mới">
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <footer class="app-footer">
+        <a href="https://abaii.vn/" target="_blank" rel="noopener noreferrer" title="ABAII Website">
+          Phát triển và vận hành bởi Bộ phận Đào tạo - Viện Công nghệ Blockchain và Trí tuệ nhân tạo (ABAII)
+        </a>
+      </footer>
+    </div>
+
+    <div id="micStatus" class="debug-panel"></div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const tabNav = document.querySelector(".tab-navigation");
+        const tabButtons = tabNav.querySelectorAll(".tab-button");
+        const activeTabIndicator = tabNav.querySelector(".active-tab-indicator");
+        const noteContents = document.querySelectorAll(".note-content");
+
+        function setActiveTab(activeButton, skipAnimation = false) {
+          if (!activeButton || !activeTabIndicator) return;
+
+          tabButtons.forEach((btn) => btn.classList.remove("active"));
+          activeButton.classList.add("active");
+
+          const tabName = activeButton.getAttribute("data-tab");
+          noteContents.forEach((content) => content.classList.remove("active"));
+
+          if (tabName === "raw") {
+            document.getElementById("rawTranscription").classList.add("active");
+          } else {
+            document.getElementById("polishedNote").classList.add("active");
+          }
+
+          const originalTransition = activeTabIndicator.style.transition;
+          if (skipAnimation) {
+            activeTabIndicator.style.transition = "none";
+          } else {
+            activeTabIndicator.style.transition = "";
+          }
+
+          activeTabIndicator.style.left = `${activeButton.offsetLeft}px`;
+          activeTabIndicator.style.width = `${activeButton.offsetWidth}px`;
+
+          if (skipAnimation) {
+            activeTabIndicator.offsetHeight;
+            activeTabIndicator.style.transition = originalTransition;
+          }
+        }
+
+        tabButtons.forEach((button) => {
+          button.addEventListener("click", (e) => {
+            setActiveTab(e.currentTarget);
+          });
+        });
+
+        const initiallyActiveButton = tabNav.querySelector(".tab-button.active");
+        if (initiallyActiveButton) {
+          requestAnimationFrame(() => {
+            setActiveTab(initiallyActiveButton, true);
+          });
+        }
+
+        window.addEventListener("resize", () => {
+          requestAnimationFrame(() => {
+            const currentActiveButton = tabNav.querySelector(".tab-button.active");
+            if (currentActiveButton) {
+              setActiveTab(currentActiveButton, true);
+            }
+          });
+        });
+      });
+    </script>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
