@@ -312,7 +312,7 @@ class VoiceNotesApp {
 
     const currentTitle = this.editorTitle.textContent?.trim();
     const placeholder =
-      this.editorTitle.getAttribute('placeholder') || 'Ghi chú không tiêu đề';
+      this.editorTitle.getAttribute('placeholder') || 'Tốc ký không tiêu đề';
     this.liveRecordingTitle.textContent =
       currentTitle && currentTitle !== placeholder
         ? currentTitle
@@ -587,11 +587,11 @@ class VoiceNotesApp {
         if (this.currentNote)
           this.currentNote.rawTranscription = transcriptionText;
         this.recordingStatus.textContent =
-          'Ghi âm thô hoàn tất. Đang tinh chỉnh ghi chú...';
+          'Ghi âm thô hoàn tất. Đang tinh chỉnh tốc ký...';
         this.getPolishedNote().catch((err) => {
-          console.error('Lỗi khi tinh chỉnh ghi chú:', err);
+          console.error('Lỗi khi tinh chỉnh tốc ký:', err);
           this.recordingStatus.textContent =
-            'Lỗi tinh chỉnh ghi chú sau khi có bản ghi âm thô.';
+            'Lỗi tinh chỉnh tốc ký sau khi có bản ghi âm thô.';
         });
       } else {
         this.recordingStatus.textContent =
@@ -629,14 +629,14 @@ class VoiceNotesApp {
         return;
       }
 
-      this.recordingStatus.textContent = 'Đang tinh chỉnh ghi chú...';
+      this.recordingStatus.textContent = 'Đang tinh chỉnh tốc ký...';
 
       const prompt = `Dựa vào bản ghi âm thô dưới đây (có thể bằng tiếng Anh hoặc ngôn ngữ khác), hãy thực hiện các công việc sau:
 1. Dịch toàn bộ nội dung sang Tiếng Việt một cách chính xác.
-2. Chỉnh sửa văn bản Tiếng Việt đã dịch để tạo thành một ghi chú rõ ràng, có định dạng đẹp.
+2. Chỉnh sửa văn bản Tiếng Việt đã dịch để tạo thành một tốc ký rõ ràng, có định dạng đẹp.
 3. Loại bỏ các từ đệm (ví dụ: "um", "uh"), các đoạn lặp từ, những câu nói sai hoặc ngập ngừng, và các dấu thời gian (ví dụ: [00:01:23]), nhưng phải giữ lại ý nghĩa gốc.
-4. Định dạng ghi chú Tiếng Việt cuối cùng bằng markdown (sử dụng tiêu đề, danh sách, in đậm, v.v.) để dễ đọc.
-5. Đảm bảo kết quả cuối cùng CHỈ LÀ ghi chú Tiếng Việt đã được tinh chỉnh, không có bất kỳ bình luận hay giải thích nào thêm.
+4. Định dạng tốc ký Tiếng Việt cuối cùng bằng markdown (sử dụng tiêu đề, danh sách, in đậm, v.v.) để dễ đọc.
+5. Đảm bảo kết quả cuối cùng CHỈ LÀ ghi tốc ký Tiếng Việt đã được tinh chỉnh, không có bất kỳ bình luận hay giải thích nào thêm.
 
 Bản ghi âm thô:
 ${this.rawTranscription.textContent}`;
@@ -703,7 +703,7 @@ ${this.rawTranscription.textContent}`;
         if (!noteTitleSet && this.editorTitle) {
           const currentEditorText = this.editorTitle.textContent?.trim();
           const placeholderText =
-            this.editorTitle.getAttribute('placeholder') || 'Ghi chú không tiêu đề';
+            this.editorTitle.getAttribute('placeholder') || 'Tốc ký không tiêu đề';
           if (
             currentEditorText === '' ||
             currentEditorText === placeholderText
@@ -716,7 +716,7 @@ ${this.rawTranscription.textContent}`;
         }
 
         this.recordingStatus.textContent =
-          'Ghi chú đã được tinh chỉnh. Sẵn sàng cho bản ghi tiếp theo.';
+          'Tốc ký đã được tinh chỉnh. Sẵn sàng cho bản ghi tiếp theo.';
       } else {
         this.recordingStatus.textContent =
           'Tinh chỉnh thất bại hoặc trả về trống.';
@@ -733,9 +733,9 @@ ${this.rawTranscription.textContent}`;
         }
       }
     } catch (error) {
-      console.error('Lỗi khi tinh chỉnh ghi chú:', error);
+      console.error('Lỗi khi tinh chỉnh tốc ký:', error);
       this.recordingStatus.textContent =
-        'Lỗi khi tinh chỉnh ghi chú. Vui lòng thử lại.';
+        'Lỗi khi tinh chỉnh tốc ký. Vui lòng thử lại.';
       this.polishedNote.innerHTML = `<p><em>Lỗi trong quá trình tinh chỉnh: ${error instanceof Error ? error.message : String(error)}</em></p>`;
       if (
         this.polishedNote.textContent?.trim() === '' ||
@@ -865,7 +865,7 @@ ${this.rawTranscription.textContent}`;
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
 
-      let title = this.editorTitle.textContent?.trim() || 'Ghi chú';
+      let title = this.editorTitle.textContent?.trim() || 'Tốc ký';
       const placeholderTitle = this.editorTitle.getAttribute('placeholder');
       if (title === placeholderTitle || !title) {
         title = 'Ghi-chú-không-tiêu-đề';
@@ -903,7 +903,7 @@ ${this.rawTranscription.textContent}`;
 
     if (this.editorTitle) {
       const placeholder =
-        this.editorTitle.getAttribute('placeholder') || 'Ghi chú không tiêu đề';
+        this.editorTitle.getAttribute('placeholder') || 'Tốc ký không tiêu đề';
       this.editorTitle.textContent = placeholder;
       this.editorTitle.classList.add('placeholder-active');
     }
